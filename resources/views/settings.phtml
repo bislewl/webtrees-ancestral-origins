@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Http\RequestHandlers\ModulesAllPage;
+use Fisharebest\Webtrees\I18N;
+
+/**
+ * @var string $title
+ * @var string $overrides
+ * @var string $settler
+ * @var string $max_depth
+ */
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ModulesAllPage::class) => I18N::translate('Modules'), $title]]) ?>
+
+<h1><?= e($title) ?></h1>
+
+<p><?= I18N::translate('Each individual gets an “Origins” tab with a pie chart of where their ancestors came from. A line counts toward the origin of its earliest known person: their NATI (nationality) fact if they have one, otherwise a rule below, otherwise the country in their birthplace.') ?></p>
+
+<form method="post">
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label" for="overrides"><?= I18N::translate('Place rules') ?></label>
+        <div class="col-sm-9">
+            <textarea class="form-control font-monospace" id="overrides" name="overrides" rows="10" dir="ltr"><?= e($overrides) ?></textarea>
+            <div class="form-text">
+                <?= I18N::translate('One rule per line, in the form “text = origin”. If the text appears anywhere in a birthplace (ignoring case), that origin is used. Use this for groups whose origin differs from the country, for example “Tolna = German (Danube Swabian)” or “Brothertown = Native American”. Lines starting with # are ignored.') ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-3"><?= I18N::translate('Settler countries') ?></div>
+        <div class="col-sm-9">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="settler" name="settler" value="1" <?= $settler === '1' ? 'checked' : '' ?>>
+                <label class="form-check-label" for="settler"><?= I18N::translate('Count the United States, Canada, Australia and similar countries as origins') ?></label>
+            </div>
+            <div class="form-text"><?= I18N::translate('When unticked (recommended), lines keep climbing past these countries, and a line that stops there is shown as “Not traced”.') ?></div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label class="col-sm-3 col-form-label" for="max_depth"><?= I18N::translate('Generations') ?></label>
+        <div class="col-sm-9">
+            <input class="form-control" type="number" min="5" max="60" id="max_depth" name="max_depth" value="<?= e($max_depth) ?>" style="max-width:8rem">
+            <div class="form-text"><?= I18N::translate('How many generations back to look (5–60).') ?></div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="offset-sm-3 col-sm-9">
+            <button type="submit" class="btn btn-primary"><?= view('icons/save') ?> <?= I18N::translate('save') ?></button>
+        </div>
+    </div>
+
+    <?= csrf_field() ?>
+</form>

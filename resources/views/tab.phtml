@@ -1,0 +1,86 @@
+<?php
+
+declare(strict_types=1);
+
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Individual;
+
+/**
+ * @var Individual                                                              $individual
+ * @var array<int,array{label:string,share:float,color:string,unknown:bool}>    $slices
+ * @var float                                                                   $traced
+ * @var int                                                                     $ancestors
+ */
+
+$id  = 'ao-' . e($individual->xref());
+$pct = static fn (float $v): string => I18N::percentage($v, $v >= 0.1 || $v === 0.0 ? 0 : 1);
+
+// Donut geometry.
+$cx = 110; $cy = 110; $r = 104; $ri = 60;
+$point = static fn (float $radius, float $a): string => round($cx + $radius * sin($a), 3) . ' ' . round($cy - $radius * cos($a), 3);
+$arc = static function (float $a0, float $a1) use ($r, $ri, $point): string {
+    if ($a1 - $a0 >= 2 * M_PI - 0.0001) {
+        // A single full ring: draw it as two halves.
+        $mid = $a0 + M_PI;
+        return 'M' . $point($r, $a0) . ' A' . $r . ' ' . $r . ' 0 1 1 ' . $point($r, $mid)
+            . ' A' . $r . ' ' . $r . ' 0 1 1 ' . $point($r, $a0)
+            . ' M' . $point($ri, $a0) . ' A' . $ri . ' ' . $ri . ' 0 1 0 ' . $point($ri, $mid)
+            . ' A' . $ri . ' ' . $ri . ' 0 1 0 ' . $point($ri, $a0) . ' Z';
+    }
+    $large = $a1 - $a0 > M_PI ? 1 : 0;
+
+    return 'M' . $point($r, $a0) . ' A' . $r . ' ' . $r . ' 0 ' . $large . ' 1 ' . $point($r, $a1)
+        . ' L' . $point($ri, $a1) . ' A' . $ri . ' ' . $ri . ' 0 ' . $large . ' 0 ' . $point($ri, $a0) . ' Z';
+};
+?>
+
+<style>
+    #<?= $id ?> { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; padding: .75rem 0; }
+    #<?= $id ?> .ao-chart { flex: 0 0 auto; width: 220px; max-width: 100%; }
+    #<?= $id ?> .ao-chart svg { width: 100%; height: auto; display: block; }
+    #<?= $id ?> .ao-chart path { stroke: var(--bs-body-bg, #fff); stroke-width: 2; fill-rule: evenodd; }
+    #<?= $id ?> .ao-chart path:hover { opacity: .85; }
+    #<?= $id ?> .ao-mid { font-size: 22px; font-weight: 600; fill: currentColor; }
+    #<?= $id ?> .ao-mid2 { font-size: 11px; fill: currentColor; opacity: .7; }
+    #<?= $id ?> .ao-legend { flex: 1 1 260px; min-width: 0; }
+    #<?= $id ?> .ao-legend table { width: 100%; max-width: 30rem; }
+    #<?= $id ?> .ao-legend td { padding: .2rem .5rem; vertical-align: middle; }
+    #<?= $id ?> .ao-legend td.ao-v { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    #<?= $id ?> .ao-sw { display: inline-block; width: .8rem; height: .8rem; border-radius: 3px; vertical-align: -.05rem; }
+    #<?= $id ?> .ao-sw.ao-unknown { border: 1px dashed #9a9590; }
+    #<?= $id ?> .ao-note { font-size: .85em; opacity: .75; margin-top: .75rem; max-width: 40rem; }
+</style>
+
+<div id="<?= $id ?>" class="wt-ancestral-origins">
+    <?php if ($slices === [] || $traced <= 0.0) : ?>
+        <p><?= I18N::translate('No ancestors with a known place of origin have been recorded for this individual.') ?></p>
+    <?php else : ?>
+        <div class="ao-chart">
+            <svg viewBox="0 0 220 220" role="img" aria-label="<?= e(implode(', ', array_map(static fn (array $s): string => $s['label'] . ' ' . $pct($s['share']), $slices))) ?>">
+                <?php $a = 0.0; foreach ($slices as $s) : $a1 = $a + $s['share'] * 2 * M_PI; ?>
+                    <path d="<?= $arc($a, $a1) ?>" fill="<?= e($s['color']) ?>"><title><?= e($s['label']) ?>: <?= $pct($s['share']) ?></title></path>
+                <?php $a = $a1; endforeach ?>
+                <text x="110" y="112" text-anchor="middle" class="ao-mid"><?= $pct($traced) ?></text>
+                <text x="110" y="132" text-anchor="middle" class="ao-mid2"><?= I18N::translate('traced') ?></text>
+            </svg>
+        </div>
+
+        <div class="ao-legend">
+            <table class="table table-sm mb-0">
+                <tbody>
+                    <?php foreach ($slices as $s) : ?>
+                        <tr>
+                            <td><span class="ao-sw<?= $s['unknown'] ? ' ao-unknown' : '' ?>" style="background:<?= e($s['color']) ?>"></span></td>
+                            <td><?= e($s['label']) ?></td>
+                            <td class="ao-v"><?= $pct($s['share']) ?></td>
+                        </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+            <p class="ao-note">
+                <?= I18N::translate('Worked out from the family tree, not from DNA. Each parent passes on half, each grandparent a quarter, and so on; each line counts toward the place where its earliest known person was born (or their recorded nationality). Lines that stop in the Americas or other settler countries, or with no known birthplace, are shown as not traced.') ?>
+                <?= I18N::plural('Based on %s ancestor.', 'Based on %s ancestors.', $ancestors, I18N::number($ancestors)) ?>
+            </p>
+        </div>
+    <?php endif ?>
+</div>
