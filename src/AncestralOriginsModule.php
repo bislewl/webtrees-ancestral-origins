@@ -94,6 +94,11 @@ class AncestralOriginsModule extends AbstractModule implements ModuleCustomInter
     // Tab
     // ------------------------------------------------------------------
 
+    public function tabTitle(): string
+    {
+        return I18N::translate('Origins');
+    }
+
     public function defaultTabOrder(): int
     {
         return 50;
