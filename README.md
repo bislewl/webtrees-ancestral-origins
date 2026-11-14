@@ -1,5 +1,7 @@
 # Ancestral Origins for webtrees
 
+![The Origins tab](screenshot.png)
+
 A custom module for [webtrees](https://webtrees.net) 2.2 that adds an **Origins** tab to every individual's page. The tab shows a pie chart of where that person's ancestors came from.
 
 The chart is worked out from the family tree, not from DNA:
@@ -13,7 +15,7 @@ The chart is worked out from the family tree, not from DNA:
 - By default, places in the United States, Canada, Australia and other settler countries don't count as an origin. The line keeps climbing, and if it stops there, that share is shown as **Not traced**. You can change this setting.
 - The chart respects webtrees privacy. Ancestors the visitor isn't allowed to see are treated as not traced.
 
-> **Status: 0.9.0 (beta).** The origin calculation is tested against a real 10,000-person tree. This is the first public release: please report problems on the [issues page](https://github.com/bislewl/webtrees-ancestral-origins/issues).
+> **Status: 0.9.0 (beta).** Running live on a 10,000-person webtrees 2.2.6 site. This is the first public release: please report problems on the [issues page](https://github.com/bislewl/webtrees-ancestral-origins/issues).
 
 ## Installing
 
