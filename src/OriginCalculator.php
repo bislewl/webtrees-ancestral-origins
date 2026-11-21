@@ -139,7 +139,7 @@ final class OriginCalculator
     /** Country names and historic or local spellings, mapped to one label. */
     public const COUNTRIES = [
         'Germany' => ['germany', 'deutschland', 'prussia', 'preussen', 'preußen', 'bavaria', 'bayern', 'baden', 'württemberg', 'wurttemberg', 'wuerttemberg', 'hessen', 'hesse', 'saxony', 'sachsen', 'mecklenburg', 'pommern', 'pomerania', 'westfalen', 'westphalia', 'hannover', 'hanover', 'rheinland', 'rhineland', 'pfalz', 'palatinate', 'oldenburg', 'holstein', 'brandenburg', 'nordrhein-westfalen', 'niedersachsen', 'schleswig'],
-        'Netherlands' => ['netherlands', 'nederland', 'holland', 'noord-brabant', 'gelderland', 'limburg (nl)', 'zeeland', 'friesland', 'groningen', 'drenthe', 'overijssel', 'utrecht'],
+        'Netherlands' => ['netherlands', 'nederland', 'groningen', 'friesland', 'drenthe', 'overijssel', 'gelderland', 'utrecht', 'noord-holland', 'zuid-holland', 'zeeland', 'noord-brabant', 'limburg (nl)'],
         'Belgium' => ['belgium', 'belgie', 'belgië', 'belgique', 'flanders', 'vlaanderen', 'brabant (be)'],
         'Luxembourg' => ['luxembourg', 'luxemburg'],
         'France' => ['france', 'alsace', 'elsass', 'lorraine', 'lothringen', 'normandy', 'normandie', 'brittany', 'bretagne'],
